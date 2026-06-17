@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Privacy Policy - CopyCampus</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: var(--bg-app);
+      padding: 40px 20px;
+    }
+    .privacy-container {
+      max-width: 650px;
+      margin: 0 auto;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+    .privacy-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .privacy-section {
+      margin-bottom: 24px;
+    }
+    .privacy-section h2 {
+      color: var(--color-student);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .privacy-section p, .privacy-section li {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .privacy-section ul {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+    .highlight-box {
+      background-color: var(--color-student-light);
+      border: 1px solid var(--color-student);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="privacy-container">
+    <div class="privacy-header">
+      <div style="font-size: 11px; font-weight: 700; color: var(--color-student); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">CopyCampus Protection</div>
+      <h1 style="margin: 0; font-size: 24px;">Student Document Privacy Policy</h1>
+      <p style="margin-top: 4px;">Last updated: June 2026</p>
+    </div>
+
+    <div class="highlight-box">
+      <h3 style="color: var(--color-student); font-size: 14px; margin-bottom: 6px;">🛡️ Core Privacy Guarantee</h3>
+      <p style="color: var(--color-student); margin: 0; font-size: 13px; line-height: 1.5;">
+        Your files are processed in-memory, encrypted during transit to secure cloud storage, and <strong>automatically purged forever within 48 hours</strong> after they are marked "collected" by the copy desk staff. We never retain, sell, or analyze your documents.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>1. Document Encryption in Transit</h2>
+      <p>
+        When you select a file or import it from Google Drive, the file is uploaded directly to secure cloud buckets hosted on Firebase Storage using SSL/TLS 256-bit encryption. This ensures that third parties cannot eavesdrop on your class assignments, exams, or personal identification scans while they are being sent to the printer.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>2. Access Control & Authorization</h2>
+      <p>
+        Documents uploaded to the copy server are accessible only by:
+      </p>
+      <ul>
+        <li>You, the student who submitted the order (accessible via your authenticated college email account).</li>
+        <li>The authorized campus print operators working the copy desk at your designated pickup location.</li>
+      </ul>
+      <p style="margin-top: 8px;">
+        Operators can view page counts, configurations, and document previews strictly to align paper stock and verify printing output.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>3. The 48-Hour Auto-Deletion Lifecycle</h2>
+      <p>
+        To keep storage costs low and maximize document confidentiality:
+      </p>
+      <ul>
+        <li><strong>Status: Uploaded / Queued / Printing:</strong> Documents remain in active cloud storage until they are printed and handed over to you.</li>
+        <li><strong>Status: Collected:</strong> The moment the operator clicks "Handed Over", the document is flagged for cleanup.</li>
+        <li><strong>Permanent Deletion:</strong> An automated cloud function scanning database logs runs daily. It permanently deletes the file binary from the storage bucket and wipes the file URL reference from the order record exactly 48 hours after the collection time.</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>4. Google Drive Permissions</h2>
+      <p>
+        When using the Google Drive Picker option, we request temporary read-only permissions to retrieve the specific file you explicitly choose to print. CopyCampus does not scan, list, or save information about any other files in your Google Drive.
+      </p>
+    </div>
+
+    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <p style="font-size: 11px;">CopyCampus respects student privacy.</p>
+      <button class="btn btn-student" onclick="window.close()" style="padding: 6px 16px; border-radius: var(--radius-sm);">Close window</button>
+    </div>
+  </div>
+
+</body>
+</html>
