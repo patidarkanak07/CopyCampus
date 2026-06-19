@@ -1,101 +1,108 @@
 /**
- * CopyCampus Cloud Services Configuration Template
+ * CopyCampus Cloud Services Configuration & Integration Guide
  * 
- * This file contains the official, production-ready boilerplates for integrating
- * 1. Firebase Storage SDK (client-side uploads & progress tracking)
- * 2. Google Picker API (import files directly from Google Drive)
- * 3. Firebase Cloud Functions (scheduled cron job to auto-delete documents after 48h)
+ * This file provides the production-ready code boilerplates required to replace
+ * the mock simulation services used in `app.js` with real cloud integrations.
  * 
- * To deploy, copy these snippets into your actual build framework.
+ * To activate any service:
+ * 1. Uncomment the corresponding code block.
+ * 2. Supply your API credentials, keys, or endpoints.
+ * 3. Import the functions into your main `app.js`.
  */
 
 // ==========================================
-// 1. FIREBASE STORAGE CONFIGURATION & UPLOAD
+// 1. AWS S3 PRE-SIGNED URL UPLOAD TEMPLATE
 // ==========================================
-
-import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-
-// Replace with your project credentials from Firebase Console
-const firebaseConfig = {
-  apiKey: "AIzaSyA1...",
-  authDomain: "copycampus-cf23.firebaseapp.com",
-  projectId: "copycampus-cf23",
-  storageBucket: "copycampus-cf23.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234:web:abcd"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
-
+/*
 /**
- * Uploads a document to Firebase Storage with a live progress callback
- * @param {File} file - Browser File object
- * @param {string} studentEmail - Authenticated student's email (used for namespacing)
- * @param {Function} onProgress - Callback receiving percentage (0-100)
- * @returns {Promise<string>} Public download URL of the uploaded document
- */
-export async function uploadDocumentToFirebase(file, studentEmail, onProgress) {
-  // Namespace files by student email and append timestamp to prevent filename collisions
-  const cleanEmail = studentEmail.replace(/[^a-zA-Z0-9]/g, '_');
-  const filePath = `prints/${cleanEmail}/${Date.now()}_${file.name}`;
-  const storageRef = ref(storage, filePath);
-  
-  // Set metadata including cache controls and privacy tags
-  const metadata = {
-    contentType: file.type,
-    customMetadata: {
-      uploadedBy: studentEmail,
-      privacyPolicy: "delete-after-48h",
-      collectedStatus: "pending"
-    }
-  };
+ * Uploads a file to AWS S3 using a pre-signed URL generated from your backend API.
+ * This prevents exposing AWS Secret Keys in the client browser.
+ * 
+ * How to swap in app.js:
+ * Replace the code inside CloudStorageService.upload(file) with a call to this function.
+ *
+ * @param {File} file - Browser file object
+ * @param {string} studentEmail - Student's authenticated email (used for folder mapping)
+ * @param {Function} onProgress - Callback receiving upload percentage (0-100)
+ * @returns {Promise<string>} S3 Object storage path URL
+ * /
+export async function uploadToAWSS3(file, studentEmail, onProgress) {
+  try {
+    // A. Request a pre-signed URL from your backend gateway (Node.js/Python server)
+    const backendResponse = await fetch('/api/generate-presigned-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName: file.name,
+        contentType: file.type,
+        studentEmail: studentEmail
+      })
+    });
+    
+    if (!backendResponse.ok) throw new Error("Failed to get pre-signed upload URL.");
+    
+    const { uploadUrl, downloadUrl } = await backendResponse.json();
 
-  const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+    // B. Perform PUT request directly to S3 with upload progress tracking
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          onProgress(percent);
+        }
+      });
 
-  return new Promise((resolve, reject) => {
-    uploadTask.on('state_changed', 
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        if (onProgress) onProgress(Math.round(progress));
-      }, 
-      (error) => {
-        console.error("Firebase cloud upload failed: ", error);
-        reject(error);
-      }, 
-      async () => {
-        // Upload completed successfully, get download URL
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        resolve(downloadURL);
-      }
-    );
-  });
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          // Success: return the file reference URL for orders database
+          resolve(downloadUrl);
+        } else {
+          reject(new Error(`S3 upload failed: Status ${xhr.status}`));
+        }
+      });
+
+      xhr.addEventListener('error', () => reject(new Error("Network upload error.")));
+      xhr.open('PUT', uploadUrl);
+      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.send(file);
+    });
+  } catch (error) {
+    console.error("AWS S3 Upload Error: ", error);
+    throw error;
+  }
 }
+*/
 
 
 // ==========================================
-// 2. GOOGLE DRIVE PICKER INTEGRATION API
+// 2. GOOGLE DRIVE PICKER API & AUTH FLOW
 // ==========================================
+/*
+/**
+ * Integrates Google Drive Picker SDK with OAuth2 login.
+ * Allows students to directly select files from their Personal Google Drive.
+ * 
+ * How to swap in app.js:
+ * Replace the MockGoogleDrivePicker.open() with a trigger to openGoogleDrivePicker().
+ * /
 
-// Credentials from Google API Console (console.cloud.google.com)
-const developerKey = 'AIzaSyC-GoogleDevKey...';
-const clientId = '1234567890-oauthClientId.apps.googleusercontent.com';
+const developerKey = 'AIzaSyA_your_google_developer_key'; 
+const clientId = 'your_client_id.apps.googleusercontent.com';
 const scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
 let pickerApiLoaded = false;
 let oauthToken = null;
 
-/**
- * Load Google API client libraries
- */
-export function initGoogleDrivePicker() {
-  gapi.load('auth', onAuthApiLoad);
-  gapi.load('picker', onPickerApiLoad);
+// Call this on DOMContentLoaded to load Google API client scripts
+export function loadGoogleDrivePickerAPI() {
+  gapi.load('auth', { 'callback': onAuthApiLoad });
+  gapi.load('picker', { 'callback': onPickerApiLoad });
 }
 
 function onAuthApiLoad() {
+  // Trigger standard Oauth popup when student requests Picker
   window.gapi.auth.authorize({
     'client_id': clientId,
     'scope': scope,
@@ -110,18 +117,15 @@ function onPickerApiLoad() {
 function handleAuthResult(authResult) {
   if (authResult && !authResult.error) {
     oauthToken = authResult.access_token;
-    createPicker();
+    createPickerWindow();
   } else {
-    console.error("Google OAuth failed: ", authResult.error);
+    console.error("Google Authentication failed:", authResult.error);
   }
 }
 
-/**
- * Renders the official Google Drive Picker popup
- */
-function createPicker() {
+function createPickerWindow() {
   if (pickerApiLoaded && oauthToken) {
-    // Show only PDFs, PNGs/JPGs, and common document types (Word, PPT)
+    // Show only PDFs, Word Documents, Slides and Images
     const view = new google.picker.View(google.picker.Template.DOCS);
     view.setMimeTypes("application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation");
 
@@ -130,7 +134,7 @@ function createPicker() {
       .setOAuthToken(oauthToken)
       .setDeveloperKey(developerKey)
       .setCallback(pickerCallback)
-      .setTitle("Import College Document")
+      .setTitle("Choose Document for CopyCampus")
       .build();
       
     picker.setVisible(true);
@@ -141,95 +145,66 @@ function pickerCallback(data) {
   if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
     const doc = data[google.picker.Response.DOCUMENTS][0];
     const fileId = doc[google.picker.Document.ID];
-    const fileName = doc[google.picker.Document.NAME];
-    const fileType = doc[google.picker.Document.TYPE]; // e.g. document, photo, pdf
-    const sizeBytes = doc[google.picker.Document.SIZE_BYTES];
+    const name = doc[google.picker.Document.NAME];
+    const size = doc[google.picker.Document.SIZE_BYTES];
     
-    console.log(`Google Drive file selected. ID: ${fileId}, Name: ${fileName}`);
-    
-    // In production, fetch the file binary from Google Drive API using its ID
-    // and route it to your firebase cloud upload function:
-    // fetchFileFromDriveAndUploadToFirebase(fileId, fileName, oauthToken);
+    // In production, your backend can download the document using the fileId and auth token:
+    // fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', {
+    //   headers: { 'Authorization': 'Bearer ' + oauthToken }
+    // });
+    console.log("Selected Google Drive File:", name, "Size:", size);
   }
 }
+*/
 
 
 // ==========================================
-// 3. SCHEDULED FILE AUTO-DELETION CRON JOB
+// 3. FIREBASE STORAGE SDK COMPONENT ALTERNATIVE
 // ==========================================
-
-/**
- * Deploy this code block to Firebase Cloud Functions (v2).
- * This scheduled job runs every hour, queries Firestore to find all orders 
- * marked "collected" more than 48 hours ago, deletes the file from Firebase Storage,
- * and clears the document URL from the order record to preserve student privacy.
- * 
- * Command to deploy: firebase deploy --only functions
- */
-
 /*
-const { onSchedule } = require("firebase-functions/v2/scheduler");
-const admin = require("firebase-admin");
-admin.initializeApp();
+/**
+ * Firebase Storage client-side upload alternative.
+ * Ideal for lightweight, serverless architectures.
+ * 
+ * How to swap in app.js:
+ * Import and call uploadToFirebaseStorage inside CloudStorageService.upload(file).
+ * /
 
-exports.purgeCollectedPrintsCron = onSchedule("every 1 hours", async (event) => {
-  const db = admin.firestore();
-  const storage = admin.storage().bucket();
-  
-  // Calculate threshold timestamp (48 hours ago)
-  const thresholdTime = new Date();
-  thresholdTime.setHours(thresholdTime.getHours() - 48);
-  
-  console.log(`Cron execution: Scanning for files collected before ${thresholdTime.toISOString()}`);
-  
-  try {
-    // Find orders that are collected, have fileUrls remaining, and collected time is before threshold
-    const snapshot = await db.collection("orders")
-      .where("status", "==", "collected")
-      .where("hasCloudFile", "==", true)
-      .where("collectedTime", "<", thresholdTime)
-      .get();
-      
-    if (snapshot.empty) {
-      console.log("No expired collected documents found in queue.");
-      return;
-    }
-    
-    const batch = db.batch();
-    
-    for (const doc of snapshot.docs) {
-      const orderData = doc.data();
-      const fileUrl = orderData.fileUrl; // e.g. https://firebasestorage.googleapis.com/...
-      
-      // Extract file storage path from URL
-      // E.g. prints/student@campus.edu/1234_report.pdf
-      const pathStartIndex = fileUrl.indexOf("/o/") + 3;
-      const pathEndIndex = fileUrl.indexOf("?alt=");
-      const urlEscapedPath = fileUrl.substring(pathStartIndex, pathEndIndex);
-      const filePath = decodeURIComponent(urlEscapedPath);
-      
-      console.log(`Deleting storage object: ${filePath} for Order ID: ${doc.id}`);
-      
-      // Delete object from Storage Bucket
-      try {
-        await storage.file(filePath).delete();
-      } catch (err) {
-        // Handle case where file might have already been deleted or is missing
-        console.warn(`File ${filePath} not found in storage bucket, updating Firestore status.`, err);
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB_...",
+  authDomain: "copycampus.firebaseapp.com",
+  projectId: "copycampus",
+  storageBucket: "copycampus.appspot.com"
+};
+
+// Initialize Firebase SDK
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+export function uploadToFirebaseStorage(file, studentEmail, onProgress) {
+  // Save files grouped by student email folder
+  const cleanEmail = studentEmail.replace(/[^a-zA-Z0-9]/g, '_');
+  const storageRef = ref(storage, `prints/${cleanEmail}/${Date.now()}_${file.name}`);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        if (onProgress) onProgress(percent);
+      }, 
+      (error) => {
+        console.error("Firebase Storage Upload Error:", error);
+        reject(error);
+      }, 
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        resolve(downloadURL);
       }
-      
-      // Update order metadata in Firestore: clear the fileUrl reference & mark file as deleted
-      batch.update(doc.ref, {
-        fileUrl: null,
-        hasCloudFile: false,
-        cloudDeletedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    
-    await batch.commit();
-    console.log(`Successfully purged files for ${snapshot.size} orders.`);
-  } catch (error) {
-    console.error("Cron Job Execution Failure:", error);
-  }
-});
+    );
+  });
+}
 */

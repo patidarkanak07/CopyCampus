@@ -8,560 +8,447 @@
 </head>
 <body>
 
-  <!-- Mode Control Switcher (Fixed Bottom Drawer for Presentation/Toggling) -->
-  <div class="app-header-controls" id="modeSwitcher">
-    <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">View Mode:</span>
-    <button class="mode-btn active-student" id="btnShowStudent" onclick="switchView('student')">Student App</button>
-    <button class="mode-btn" id="btnShowOperator" onclick="switchView('operator')">Operator Dashboard</button>
+  <!-- Mode Control Switcher for Responsive/Mobile Toggling -->
+  <div class="app-header-controls" id="modeSwitcher" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #FFFFFF; padding: 8px 16px; border-radius: 9999px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); align-items: center; gap: 12px;">
+    <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">View Mode:</span>
+    <button class="btn btn-student" id="btnShowStudent" onclick="switchView('student')" style="padding: 4px 12px; border-radius: 9999px; font-size: 11px;">Student App</button>
+    <button class="btn btn-operator" id="btnShowOperator" onclick="switchView('operator')" style="padding: 4px 12px; border-radius: 9999px; font-size: 11px;">Operator Dashboard</button>
   </div>
 
-  <div class="app-container">
+  <div class="app-container" id="appContainer">
     
     <!-- LEFT PANE: STUDENT APP (SIMULATED MOBILE DEVICE FRAME) -->
-    <div class="pane student-pane" id="studentPane">
+    <div class="pane student-pane" id="student-pane">
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <div class="phone-screen" id="studentScreen">
-          
-          <!-- STUDENT AUTH SCREEN -->
-          <div class="student-flow" id="studentAuthScreen">
-            <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
-              <div style="font-size: 32px; font-weight: 800; color: var(--color-student); letter-spacing: -0.03em;">CopyCampus</div>
-              <p>instant campus printing in your pocket</p>
-            </div>
-            
-            <div class="card">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Sign in with college email</h2>
-              <div class="form-group">
-                <label class="form-label" for="studentEmail">College Email Address</label>
-                <input type="email" id="studentEmail" class="input-text" placeholder="alex@university.edu" value="alex@campus.edu">
-                <p style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Requires a valid college domain email (.edu or .in)</p>
-              </div>
-              <button class="btn btn-student" style="width: 100%; margin-top: 8px;" onclick="studentLogin()">Continue</button>
-            </div>
-          </div>
-
-          <!-- STUDENT HOME SCREEN -->
-          <div class="student-flow" id="studentHomeScreen" style="display: none;">
-            <div class="flex-between" style="margin-bottom: 20px;">
-              <div>
-                <p id="studentWelcomeText">Hello, Alex</p>
-                <h1 style="margin: 0; font-size: 18px;">Print documents</h1>
-              </div>
-              <button class="btn btn-student-outline" style="padding: 4px 10px; font-size: 11px; border-radius: 9999px;" onclick="studentLogout()">Log out</button>
-            </div>
-
-            <!-- Credits Card -->
-            <div class="card" style="border-color: var(--color-student); background-color: var(--color-student-light); position: relative; overflow: hidden;">
-              <p style="color: var(--color-student); font-weight: 500; font-size: 12px;">Prepaid Semester Balance</p>
-              <div style="display: flex; align-items: baseline; gap: 4px; margin: 4px 0 10px 0;">
-                <span id="studentCreditBalance" style="font-size: 32px; font-weight: 800; color: var(--color-student); line-height: 1;">0</span>
-                <span style="font-size: 13px; font-weight: 600; color: var(--color-student);">pages left</span>
-              </div>
-              <button class="btn btn-student" style="padding: 6px 12px; font-size: 11px; border-radius: var(--radius-sm);" onclick="openBuyCreditsModal()">Buy Credit Pack</button>
-            </div>
-
-            <!-- Quick Action: Upload Print File -->
-            <div class="card" style="cursor: pointer; padding: 24px; border-style: dashed; border-width: 2px; text-align: center;" onclick="goToUploadScreen()">
-              <div style="font-size: 24px; margin-bottom: 8px;">📄</div>
-              <h3 class="sentence-case">Upload new document</h3>
-              <p>Tap to configure and order prints</p>
-            </div>
-
-            <!-- Active Orders tracking -->
-            <div style="margin-top: 16px;">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Active printing jobs</h2>
-              <div id="studentActiveJobsList">
-                <p style="text-align: center; padding: 16px; color: var(--text-muted);">No active jobs. Upload a file to start.</p>
-              </div>
-            </div>
-
-            <!-- Reprint / History Section -->
-            <div style="margin-top: 24px;">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Order history</h2>
-              <div id="studentHistoryList">
-                <p style="text-align: center; padding: 16px; color: var(--text-muted);">No past orders found.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- STUDENT UPLOAD & CONFIGURE SCREEN -->
-          <div class="student-flow" id="studentUploadScreen" style="display: none; padding-bottom: 80px;">
-            <div class="flex-row" style="margin-bottom: 16px; cursor: pointer;" onclick="goToHomeScreen()">
-              <span style="font-size: 18px;">←</span>
-              <span style="font-weight: 500;">Back to home</span>
-            </div>
-
-            <h1>Configure your print</h1>
-            <p style="margin-bottom: 16px;">Upload files or import directly from Google Drive.</p>
-
-            <!-- Privacy Notice Panel -->
-            <div class="card" style="background-color: #f8fafc; border-left: 4px solid var(--color-student); padding: 12px;">
-              <p style="font-size: 11px; line-height: 1.4; color: var(--text-main);">
-                🛡️ <strong>File Privacy:</strong> Your files are encrypted in transit and automatically deleted from our servers within 48 hours of printing. We never share or reuse your documents. 
-                <a href="privacy.html" target="_blank" style="color: var(--color-student); text-decoration: underline; font-weight: 500;">View Privacy Policy</a>
-              </p>
-            </div>
-
-            <!-- Upload Area -->
-            <div class="upload-dropzone" id="studentDropzone" onclick="triggerFileInput()">
-              <input type="file" id="fileSelectorInput" style="display: none;" onchange="handleFileSelected(event)" accept=".pdf,.png,.jpg,.jpeg,.docx,.pptx">
-              <div style="font-size: 32px; margin-bottom: 8px;">📤</div>
-              <h3 class="sentence-case">Select print documents</h3>
-              <p>PDF, PNG, JPG, DOCX, PPTX supported</p>
-              <button class="btn btn-student-outline" style="margin-top: 12px; padding: 6px 12px; font-size: 11px;" onclick="simulateGoogleDriveImport(event)">☁️ Import from Google Drive</button>
-            </div>
-
-            <!-- Uploaded file metadata & preview -->
-            <div id="uploadedFilesContainer" style="display: none; margin-top: 12px;">
-              <h3 class="sentence-case">Uploaded Document</h3>
-              <div class="file-item">
-                <div class="file-icon" id="uploadedFileIcon">PDF</div>
-                <div class="file-info">
-                  <div class="file-name" id="uploadedFileName">document_name.pdf</div>
-                  <div class="file-meta" id="uploadedFileMeta">14 pages • 2.4 MB</div>
-                </div>
-                <button class="file-remove" onclick="removeUploadedFile()">✕</button>
-              </div>
-
-              <!-- Page preview container -->
-              <div class="card" style="margin-top: 12px; padding: 10px; background-color: #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <p style="font-size: 11px; margin-bottom: 6px; font-weight: 500;">Document Page Preview</p>
-                <div style="width: 140px; height: 180px; background: white; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; position: relative;" id="previewPageFrame">
-                  <!-- Simulated file elements are injected here -->
-                  <div style="padding: 12px; font-size: 8px; color: var(--text-muted);" id="previewText">Document contents...</div>
-                  <div style="position: absolute; bottom: 8px; right: 8px; background: #e2e8f0; font-size: 8px; padding: 2px 6px; border-radius: 4px;" id="previewPageNum">Page 1</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Print Options Form -->
-            <div class="card" style="margin-top: 16px;" id="optionsFormContainer">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Print parameters</h2>
-              
-              <div class="form-group">
-                <label class="form-label">Color scheme</label>
-                <div style="display: flex; gap: 10px;">
-                  <label class="flex-row" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer;">
-                    <input type="radio" name="optColor" value="bw" checked onchange="calculateCost()">
-                    <span>Black & White</span>
-                  </label>
-                  <label class="flex-row" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer;">
-                    <input type="radio" name="optColor" value="color" onchange="calculateCost()">
-                    <span style="color: var(--color-student); font-weight: 500;">Color</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Sides</label>
-                <div style="display: flex; gap: 10px;">
-                  <label class="flex-row" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer;">
-                    <input type="radio" name="optSides" value="single" checked onchange="calculateCost()">
-                    <span>Single-sided</span>
-                  </label>
-                  <label class="flex-row" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer;">
-                    <input type="radio" name="optSides" value="double" onchange="calculateCost()">
-                    <span>Double-sided</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="optPaperSize">Paper size</label>
-                <select id="optPaperSize" class="select-input" onchange="calculateCost()">
-                  <option value="a4" selected>A4 (Standard)</option>
-                  <option value="a3">A3 (Double Size)</option>
-                  <option value="letter">Letter</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="optRange">Page range</label>
-                <input type="text" id="optRange" class="input-text" placeholder="e.g. All, 1-5, 8" value="All" oninput="calculateCost()">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="optCopies">Number of copies</label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <button class="btn btn-student-outline" style="padding: 4px 12px; font-weight: 700;" onclick="adjustCopies(-1)">-</button>
-                  <input type="number" id="optCopies" class="input-text" value="1" min="1" style="text-align: center; width: 60px;" readonly>
-                  <button class="btn btn-student-outline" style="padding: 4px 12px; font-weight: 700;" onclick="adjustCopies(1)">+</button>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="optBinding">Binding / Finishing</label>
-                <select id="optBinding" class="select-input" onchange="calculateCost()">
-                  <option value="none" selected>None (Loose Pages)</option>
-                  <option value="stapled">Stapled Corner (+ ₹2)</option>
-                  <option value="spiral">Spiral binding (+ ₹20)</option>
-                  <option value="softcover">Softcover Book (+ ₹50)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="optLocation">Campus pickup point</label>
-                <select id="optLocation" class="select-input">
-                  <option value="library" selected>Central Library - Desk A</option>
-                  <option value="eng_block">Engineering Block B - Copy Counter</option>
-                  <option value="canteen">Student Center Lounge - Printer Hub</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Live estimate footer bar -->
-            <div class="estimate-bar">
-              <div>
-                <p style="font-size: 11px;">Estimated Cost</p>
-                <h2 style="margin: 0; font-size: 18px; color: var(--color-student);" id="liveCostVal">₹0.00</h2>
-              </div>
-              <button class="btn btn-student btn-disabled" id="btnContinueCheckout" onclick="initiateCheckout()" disabled>Order & Pay</button>
-            </div>
-          </div>
-
-          <!-- STUDENT ORDER TRACKING / RECEIPT SCREEN -->
-          <div class="student-flow" id="studentTrackerScreen" style="display: none;">
-            <div class="flex-row" style="margin-bottom: 16px; cursor: pointer;" onclick="goToHomeScreen()">
-              <span style="font-size: 18px;">←</span>
-              <span style="font-weight: 500;">Back to home</span>
-            </div>
-
-            <h1 id="trackOrderTitle">Order #CC-102</h1>
-            <p id="trackOrderFile">document_chemistry.pdf</p>
-
-            <div class="card" style="margin-top: 16px;">
-              <div class="flex-between">
-                <span style="font-size: 12px; color: var(--text-muted);">Pickup point</span>
-                <span id="trackPickupPoint" style="font-weight: 600;">Library Desk A</span>
-              </div>
-              <div class="flex-between" style="margin-top: 8px;">
-                <span style="font-size: 12px; color: var(--text-muted);">Total Paid</span>
-                <span id="trackAmountPaid" style="font-weight: 600; color: var(--color-student);">₹14.00</span>
-              </div>
-            </div>
-
-            <!-- Order status tracking stages -->
-            <div class="tracker-container">
-              <div class="tracker-step" id="step_uploaded">
-                <div class="tracker-node">✓</div>
-                <div class="tracker-title">Order uploaded</div>
-                <div class="tracker-time" id="time_uploaded">-</div>
-              </div>
-              <div class="tracker-step" id="step_queued">
-                <div class="tracker-node">✓</div>
-                <div class="tracker-title">Queued at desk</div>
-                <div class="tracker-time" id="time_queued">-</div>
-              </div>
-              <div class="tracker-step" id="step_printing">
-                <div class="tracker-node">✓</div>
-                <div class="tracker-title">Document printing</div>
-                <div class="tracker-time" id="time_printing">-</div>
-              </div>
-              <div class="tracker-step" id="step_ready">
-                <div class="tracker-node">✓</div>
-                <div class="tracker-title">Ready for pickup</div>
-                <div class="tracker-time" id="time_ready">-</div>
-              </div>
-              <div class="tracker-step" id="step_collected">
-                <div class="tracker-node">✓</div>
-                <div class="tracker-title">Collected</div>
-                <div class="tracker-time" id="time_collected">-</div>
-              </div>
-            </div>
-
-            <div id="trackerCollectedNotice" class="card" style="display: none; background-color: var(--color-student-light); border-color: var(--color-student); text-align: center; margin-top: 16px;">
-              <p style="color: var(--color-student); font-weight: 500;">🎉 Collected!</p>
-              <p style="font-size: 11px; margin-top: 4px;">This file will be permanently deleted from the cloud storage in exactly 48 hours.</p>
-            </div>
-            
-            <button class="btn btn-student-outline" style="width: 100%; margin-top: 24px;" onclick="reprintCurrentTrackerOrder()">🔄 Reprint this order</button>
-          </div>
-
+        <div class="phone-screen" id="student-app">
+          <!-- JS will render student screens dynamically here -->
         </div>
       </div>
     </div>
 
     <!-- RIGHT PANE: OPERATOR DASHBOARD (WORKSTATION MONITOR) -->
-    <div class="pane operator-pane" id="operatorPane">
+    <div class="pane operator-pane" id="operator-pane">
       
       <!-- OPERATOR AUTH SCREEN -->
-      <div class="operator-flow" id="operatorAuthScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+      <div id="operator-auth-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 48px;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <div style="font-size: 32px; font-weight: 800; color: var(--color-operator); letter-spacing: -0.03em;">Staff Terminal</div>
-          <p>CopyCampus operators console</p>
+          <div style="font-size: 32px; font-weight: 800; color: var(--teal); letter-spacing: -0.03em;">Staff Terminal</div>
+          <p>CopyCampus operator administration console</p>
         </div>
         
-        <div class="card" style="width: 360px;">
-          <h2 class="sentence-case" style="margin-bottom: 12px;">Operator login</h2>
+        <div class="card" style="width: 100%; max-width: 360px;">
+          <h2 class="sentence-case" style="margin-bottom: 12px; font-size: 16px;">Operator login</h2>
           <div class="form-group">
-            <label class="form-label" for="operatorPass">Operator PIN</label>
-            <input type="password" id="operatorPass" class="input-text" placeholder="••••" value="1234">
+            <label class="form-label" for="operatorEmail">Email Address</label>
+            <input type="email" id="operatorEmail" class="input-text" placeholder="operator@campus" value="operator@campus">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="operatorPass">Password</label>
+            <input type="password" id="operatorPass" class="input-text" placeholder="••••" value="print123">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="operatorName">Operator Name (Optional)</label>
+            <input type="text" id="operatorName" class="input-text" placeholder="Operator Desk A" value="Operator Desk A">
           </div>
           <button class="btn btn-operator" style="width: 100%; margin-top: 8px;" onclick="operatorLogin()">Access Dashboard</button>
         </div>
       </div>
 
       <!-- OPERATOR DASHBOARD MAIN -->
-      <div class="operator-flow" id="operatorDashboardScreen" style="display: none;">
-        <div class="operator-header">
-          <div>
-            <span class="badge badge-operator" style="margin-bottom: 6px;">Library Desk A Terminal</span>
-            <h1 style="margin: 0; font-size: 24px;">Print Management queue</h1>
+      <div id="operator-dashboard-container" style="display: none; flex-direction: column; height: 100%;">
+        
+        <!-- Persistent low-stock warning banner -->
+        <div id="low-stock-banner" class="low-stock-banner" style="display: none;">
+          <div class="flex-row">
+            <span style="font-size: 16px;">⚠️</span>
+            <span id="low-stock-msg">Low stock alert</span>
           </div>
           <div class="flex-row">
-            <button class="btn btn-operator-outline" onclick="operatorLogout()">Exit console</button>
+            <button onclick="switchOpTab('inventory')">Go to Inventory</button>
+            <button class="dismiss-btn" onclick="dismissLowStockBanner()">✕</button>
           </div>
         </div>
 
-        <div class="operator-content">
-          
-          <!-- LEFT SIDE: QUEUE LIST -->
-          <div class="queue-section">
-            <h2 class="sentence-case">Pending jobs (<span id="queueCountLabel">0</span>)</h2>
-            <div id="operatorQueueContainer">
-              <p style="text-align: center; padding: 48px; color: var(--text-muted); background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md);">No orders in print queue</p>
+        <!-- Operator Header -->
+        <div class="operator-header">
+          <div>
+            <h1 style="margin: 0; font-size: 20px;">Campus Print — Operator</h1>
+            <p style="font-size: 11px; margin-top: 2px;">Session: <span id="op-session-name-display" style="font-weight: 600;">Operator Desk A</span></p>
+          </div>
+          <div class="flex-row">
+            <button id="focus-mode-btn" class="btn btn-operator-outline" onclick="toggleFocusMode()" style="font-size: 12px; padding: 6px 12px;">⛶ Focus</button>
+            <button class="btn btn-operator" onclick="openEndShiftModal()" style="font-size: 12px; padding: 6px 12px;">End Shift</button>
+            <button class="btn" onclick="operatorLogout()" style="font-size: 12px; padding: 6px 12px;">Lock console</button>
+          </div>
+        </div>
+
+        <!-- Operator Tabs Navigation -->
+        <div class="operator-tabs">
+          <button class="op-tab-btn active" id="opTabBtn_queue" onclick="switchOpTab('queue')">Order Queue</button>
+          <button class="op-tab-btn" id="opTabBtn_problems" onclick="switchOpTab('problems')">Problems <span id="problems-count-badge" class="badge badge-flagged" style="padding: 1px 6px; font-size: 9px; display: none;">0</span></button>
+          <button class="op-tab-btn" id="opTabBtn_inventory" onclick="switchOpTab('inventory')">Inventory</button>
+          <button class="op-tab-btn" id="opTabBtn_ledger" onclick="switchOpTab('ledger')">Credits Ledger</button>
+        </div>
+
+        <!-- Operator Tab Content Panel: Order Queue -->
+        <div class="op-tab-content-panel active" id="opTab_queue">
+          <div class="operator-queue-grid">
+            <div class="queue-section">
+              <!-- Search & Filter panel -->
+              <div class="search-filter-container">
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <input type="text" id="op-search-input" class="input-text" placeholder="Search by name, order ID, filename…" oninput="renderAllOperatorQueue()">
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr) auto auto; gap: 8px; align-items: center;">
+                  <select id="op-status-filter" class="select-input" onchange="renderAllOperatorQueue()">
+                    <option value="All">Status: All</option>
+                    <option value="queued">Queued</option>
+                    <option value="printing">Printing</option>
+                    <option value="ready">Ready</option>
+                    <option value="collected">Collected</option>
+                    <option value="flagged">Flagged</option>
+                  </select>
+                  <select id="op-type-filter" class="select-input" onchange="renderAllOperatorQueue()">
+                    <option value="All">Type: All</option>
+                    <option value="bw">B&W</option>
+                    <option value="color">Color</option>
+                  </select>
+                  <select id="op-side-filter" class="select-input" onchange="renderAllOperatorQueue()">
+                    <option value="All">Sides: All</option>
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                  </select>
+                  <span id="op-results-count" style="font-size: 12px; font-weight: 600; white-space: nowrap;">0 results</span>
+                  <a href="#" onclick="clearOperatorFilters(event)" style="font-size: 11px; color: var(--teal); text-decoration: underline; white-space: nowrap;">Clear filters</a>
+                </div>
+              </div>
+
+              <!-- Batched Order Container -->
+              <div id="order-batch-container">
+                <!-- Grouped order cards injected here -->
+              </div>
+            </div>
+
+            <!-- Stats/Summary sidebar of queue panel -->
+            <div class="flex-column" style="gap: 16px;">
+              <div class="card">
+                <h3 style="font-size: 14px; margin-bottom: 10px;">Queue Load</h3>
+                <div class="flex-between" style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+                  <span>Active Jobs</span>
+                  <span id="sidebar-active-jobs" style="font-weight: 700;">0</span>
+                </div>
+                <div class="flex-between" style="padding: 6px 0; font-size: 12px;">
+                  <span style="color: var(--text-secondary);">B&W Queue Pages</span>
+                  <span id="sidebar-bw-pages" style="font-weight: 600;">0</span>
+                </div>
+                <div class="flex-between" style="padding: 6px 0; font-size: 12px;">
+                  <span style="color: var(--text-secondary);">Color Queue Pages</span>
+                  <span id="sidebar-color-pages" style="font-weight: 600;">0</span>
+                </div>
+              </div>
+              
+              <div class="card">
+                <h3 style="font-size: 14px; margin-bottom: 10px;">Quick Info</h3>
+                <p style="font-size: 11px; line-height: 1.4;">
+                  Use keyboard shortcuts to quickly manage focused orders. Press <strong style="color: var(--teal);">?</strong> anywhere on the dashboard to view shortcut mapping list.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operator Tab Content Panel: Problems -->
+        <div class="op-tab-content-panel" id="opTab_problems">
+          <div class="flex-between" style="margin-bottom: 16px;">
+            <h2 class="sentence-case">Problem & Stale Orders</h2>
+            <button class="btn btn-operator-outline" onclick="simulateStaleOrder()" style="padding: 4px 12px; font-size: 12px;">Simulate Stale Order (+3h Delay)</button>
+          </div>
+          <div id="problems-orders-list" class="flex-column">
+            <!-- Problem order cards injected here -->
+          </div>
+        </div>
+
+        <!-- Operator Tab Content Panel: Inventory -->
+        <div class="op-tab-content-panel" id="opTab_inventory">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Stock update card -->
+            <div class="card">
+              <h2 class="sentence-case" style="margin-bottom: 16px;">Update Paper Stock</h2>
+              <div class="form-group">
+                <label class="form-label" for="inv-bw-stock">B&W Paper Stock (sheets)</label>
+                <input type="number" id="inv-bw-stock" class="input-text" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inv-color-stock">Color Paper Stock (sheets)</label>
+                <input type="number" id="inv-color-stock" class="input-text" min="0">
+              </div>
+              <button class="btn btn-operator" style="width: 100%; margin-top: 8px;" onclick="updateInventoryStock()">Update Stock</button>
+            </div>
+
+            <!-- Low stock settings thresholds card -->
+            <div class="card">
+              <h2 class="sentence-case" style="margin-bottom: 16px;">Low Stock Warning Settings</h2>
+              <div class="form-group">
+                <label class="form-label" for="threshold-bw">B&W Threshold Limit (sheets)</label>
+                <input type="number" id="threshold-bw" class="input-text" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="threshold-color">Color Threshold Limit (sheets)</label>
+                <input type="number" id="threshold-color" class="input-text" min="0">
+              </div>
+              <button class="btn btn-operator-outline" style="width: 100%; margin-top: 8px;" onclick="saveStockThresholds()">Save Thresholds</button>
             </div>
           </div>
 
-          <!-- RIGHT SIDE: STATS, LEDGER, STOCK -->
-          <div class="sidebar-section">
-            
-            <!-- Earnings summary card -->
-            <div class="card">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Earnings summary</h2>
-              <div class="stats-grid">
-                <div class="stat-box">
-                  <p style="font-size: 11px;">UPI revenue</p>
-                  <div class="stat-value" id="statsUpiRevenue">₹0.00</div>
+          <!-- Demand vs Stock panel -->
+          <div class="card" style="margin-top: 24px;">
+            <h2 class="sentence-case" style="margin-bottom: 16px;">Demand vs Current Stock</h2>
+            <div class="demand-stock-panel">
+              <!-- B&W demand row -->
+              <div class="demand-bar-group">
+                <div class="demand-bar-header">
+                  <span>Black & White Stock Covers</span>
+                  <span id="demand-bw-label">Sufficient stock</span>
                 </div>
-                <div class="stat-box">
-                  <p style="font-size: 11px;">Credits redeemed</p>
-                  <div class="stat-value" id="statsCreditRedeemed" style="color: var(--color-student);">0 pgs</div>
+                <div class="demand-progress">
+                  <div id="demand-bw-progress-fill" class="demand-progress-fill green" style="width: 100%;"></div>
                 </div>
               </div>
-            </div>
-
-            <!-- Stock & load indicator -->
-            <div class="card">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Stock & page load</h2>
-              <div class="flex-between" style="padding: 8px 0; border-bottom: 1px solid var(--border-color);">
-                <span>Daily pages printed</span>
-                <span id="statsDailyPages" style="font-weight: 700;">0</span>
-              </div>
-              <div class="flex-between" style="padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 12px;">
-                <span style="color: var(--text-muted);">Black & White pages</span>
-                <span id="statsBwPages" style="font-weight: 500;">0</span>
-              </div>
-              <div class="flex-between" style="padding: 8px 0; font-size: 12px;">
-                <span style="color: var(--text-muted);">Color pages</span>
-                <span id="statsColorPages" style="font-weight: 500;">0</span>
+              <!-- Color demand row -->
+              <div class="demand-bar-group">
+                <div class="demand-bar-header">
+                  <span>Color Stock Covers</span>
+                  <span id="demand-color-label">Sufficient stock</span>
+                </div>
+                <div class="demand-progress">
+                  <div id="demand-color-progress-fill" class="demand-progress-fill green" style="width: 100%;"></div>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Credits ledger -->
-            <div class="card">
-              <h2 class="sentence-case" style="margin-bottom: 12px;">Semester credits ledger</h2>
-              <div class="ledger-list" id="operatorLedgerContainer">
-                <p style="text-align: center; font-size: 12px; color: var(--text-muted); padding: 12px;">No credit transactions recorded</p>
-              </div>
+        <!-- Operator Tab Content Panel: Credits Ledger -->
+        <div class="op-tab-content-panel" id="opTab_ledger">
+          <div class="card">
+            <h2 class="sentence-case" style="margin-bottom: 16px;">Semester Student Credits</h2>
+            <div style="overflow-x: auto;">
+              <table class="ledger-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Email Address</th>
+                    <th>Balance (pages)</th>
+                    <th>Last Transaction</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="student-credits-table-body">
+                  <!-- Student rows will be injected here -->
+                </tbody>
+              </table>
             </div>
-
           </div>
 
+          <div class="card" style="margin-top: 24px;">
+            <h2 class="sentence-case" style="margin-bottom: 12px;">Adjustment Logs & Transactions</h2>
+            <div style="max-height: 250px; overflow-y: auto;" id="ledger-history-list">
+              <!-- Full ledger list elements injected here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Simulators Drawer at the bottom -->
+        <div class="simulators-drawer" style="margin: 24px;">
+          <div class="simulators-header" onclick="toggleSimulatorsDrawer()">
+            <span>⚙ Simulators Console</span>
+            <span id="sim-drawer-arrow">▲</span>
+          </div>
+          <div class="simulators-body" id="simulators-drawer-body">
+            <div class="flex-row" style="flex-wrap: wrap;">
+              <button class="btn btn-operator-outline" onclick="triggerTestSMS()" style="font-size: 11px; padding: 6px 12px;">Send Test SMS</button>
+              <button class="btn btn-operator-outline" onclick="triggerDeletionCron()" style="font-size: 11px; padding: 6px 12px;">Run Deletion Cron</button>
+              <button class="btn btn-operator-outline" onclick="viewScheduledDeletions()" style="font-size: 11px; padding: 6px 12px;">View Scheduled Deletions</button>
+              <button class="btn btn-operator-outline" onclick="simulateStaleOrder()" style="font-size: 11px; padding: 6px 12px;">Simulate Stale Order</button>
+            </div>
+            <div class="sim-log-panel" id="sim-console-log">
+[System Initialized] Simulator ready...
+            </div>
+          </div>
         </div>
       </div>
-
     </div>
-
   </div>
 
-  <!-- GOOGLE DRIVE PICKER SIMULATED MODAL -->
-  <div class="google-picker-modal" id="googlePickerModal" style="display: none;">
-    <div class="google-picker-content">
-      <div class="flex-between" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-        <h2 style="font-size: 16px; margin: 0;">☁️ Google Drive Picker</h2>
-        <button class="modal-close" onclick="closeGooglePicker()">✕</button>
-      </div>
-      <p style="font-size: 11px; margin-top: 6px;">Connected to student's college Google Drive account</p>
+  <!-- FLOATING BULK ACTION BAR -->
+  <div id="bulk-action-bar" class="bulk-action-bar">
+    <div style="font-size: 13px; font-weight: 600;"><span id="bulk-selected-count">0</span> orders selected</div>
+    <div class="bulk-action-buttons">
+      <button class="bulk-btn" onclick="applyBulkAction('printing')">Mark Printing</button>
+      <button class="bulk-btn" onclick="applyBulkAction('ready')">Mark Ready</button>
       
-      <div class="picker-file-list">
-        <div class="picker-file-row" onclick="selectDriveFile('chemistry_lab_report.pdf', 8, 'PDF')">
-          <div style="font-size: 20px;">📄</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600; font-size: 13px;">chemistry_lab_report.pdf</div>
-            <div style="font-size: 11px; color: var(--text-muted);">8 pages • Modified yesterday</div>
-          </div>
-        </div>
-        <div class="picker-file-row" onclick="selectDriveFile('history_thesis_draft.docx', 15, 'DOCX')">
-          <div style="font-size: 20px;">📝</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600; font-size: 13px;">history_thesis_draft.docx</div>
-            <div style="font-size: 11px; color: var(--text-muted);">15 pages • Auto-converts to PDF • Modified 3 days ago</div>
-          </div>
-        </div>
-        <div class="picker-file-row" onclick="selectDriveFile('capstone_project_slides.pptx', 24, 'PPTX')">
-          <div style="font-size: 20px;">📊</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600; font-size: 13px;">capstone_project_slides.pptx</div>
-            <div style="font-size: 11px; color: var(--text-muted);">24 pages • Auto-converts to PDF • Modified 1 week ago</div>
-          </div>
-        </div>
-        <div class="picker-file-row" onclick="selectDriveFile('id_card_scan.jpg', 1, 'JPG')">
-          <div style="font-size: 20px;">🖼️</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600; font-size: 13px;">id_card_scan.jpg</div>
-            <div style="font-size: 11px; color: var(--text-muted);">1 page • Modified May 20</div>
-          </div>
+      <!-- Flag problem bulk with inline dropdown selection -->
+      <div class="inline-dropdown-container">
+        <button class="bulk-btn" onclick="toggleBulkFlagDropdown(event)">Flag (enter reason) ▼</button>
+        <div id="bulk-flag-reason-dropdown" class="inline-dropdown">
+          <button class="inline-dropdown-item" onclick="applyBulkFlagAction('File corrupted')">File corrupted</button>
+          <button class="inline-dropdown-item" onclick="applyBulkFlagAction('Insufficient credits')">Insufficient credits</button>
+          <button class="inline-dropdown-item" onclick="applyBulkFlagAction('Student unreachable')">Student unreachable</button>
+          <button class="inline-dropdown-item" onclick="applyBulkFlagAction('Other')">Other</button>
         </div>
       </div>
-      
-      <button class="btn btn-student-outline" style="width: 100%;" onclick="closeGooglePicker()">Cancel</button>
     </div>
   </div>
 
-  <!-- PAYMENT SELECTOR / SEMESTER CREDITS MODAL -->
-  <div class="custom-modal" id="checkoutModal">
+  <!-- MODAL: CREDIT ADJUSTMENT -->
+  <div class="custom-modal" id="modal-credit-adjust" onclick="handleOutsideModalClick(event, 'modal-credit-adjust')">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 class="sentence-case">Select payment method</h2>
-        <button class="modal-close" onclick="closeCheckoutModal()">✕</button>
+        <h2 class="sentence-case">Adjust Student Credits</h2>
+        <button class="modal-close" onclick="closeModal('modal-credit-adjust')">✕</button>
       </div>
-
-      <div class="card" style="padding: 12px; background-color: #f8fafc; border-color: var(--border-color);">
-        <p style="font-size: 12px; margin-bottom: 2px;">Total Printing Fee</p>
-        <div style="font-size: 22px; font-weight: 800; color: var(--text-main);" id="checkoutCostLabel">₹0.00</div>
-        <p style="font-size: 11px; color: var(--text-muted);" id="checkoutPagesLabel">14 pages</p>
+      <div class="form-group">
+        <label class="form-label">Student Name</label>
+        <input type="text" id="credit-adjust-student-name" class="input-text" readonly style="background-color: var(--surface);">
       </div>
-
-      <!-- Option A: Semester Page Credits -->
-      <button class="btn btn-student-outline" id="btnPayWithCredits" style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; padding: 12px; height: auto;" onclick="payWithSemesterCredits()">
-        <span style="font-weight: 700; font-size: 14px;">🎓 Deduct Semester Credits</span>
-        <span style="font-size: 11px; font-weight: 400; margin-top: 2px;" id="checkoutCreditsBalanceLabel">Current balance: 0 pages</span>
-      </button>
-
-      <!-- Option B: UPI Pay-Per-Print -->
-      <button class="btn btn-student" style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; padding: 12px; height: auto;" onclick="openUpiPaymentModal()">
-        <span style="font-weight: 700; font-size: 14px;">📲 Instant UPI Checkout</span>
-        <span style="font-size: 11px; font-weight: 400; margin-top: 2px; opacity: 0.9;">Pay directly via QR code or UPI Intent</span>
-      </button>
-
-      <button class="btn btn-student-outline" style="width: 100%; border: none; font-size: 11px;" onclick="closeCheckoutModal()">Go Back</button>
-    </div>
-  </div>
-
-  <!-- INSTANT UPI PAYMENT MODAL (INTENT / QR CODE SIMULATOR) -->
-  <div class="custom-modal" id="upiPaymentModal">
-    <div class="modal-card" style="align-items: center; text-align: center;">
-      <div class="modal-header" style="width: 100%;">
-        <h2 class="sentence-case" style="margin: 0;">UPI Payment</h2>
-        <button class="modal-close" onclick="closeUpiPaymentModal()">✕</button>
-      </div>
-
-      <p style="font-size: 12px; color: var(--text-muted);">Scan QR using any UPI App (GPay, PhonePe, Paytm)</p>
-      
-      <!-- Static QR Code Canvas placeholder -->
-      <div style="width: 180px; height: 180px; background-color: white; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; margin: 8px 0;" id="qrCodeContainer">
-        <!-- Render a mock QR block -->
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 140px; height: 140px;" id="qrBlock">
-          <!-- Populated by script -->
+      <div class="form-group">
+        <label class="form-label">Adjustment Type</label>
+        <div class="modal-radio-group">
+          <label class="modal-radio-label">
+            <input type="radio" name="credit-adjust-type" value="add" checked> Add Credits
+          </label>
+          <label class="modal-radio-label">
+            <input type="radio" name="credit-adjust-type" value="deduct"> Deduct Credits
+          </label>
         </div>
-        <div style="position: absolute; font-size: 10px; font-weight: 700; background: white; padding: 2px 6px; border: 1px solid black; border-radius: 4px;">CopyCampus UPI</div>
       </div>
+      <div class="form-group">
+        <label class="form-label" for="credit-adjust-amount">Amount (pages)</label>
+        <input type="number" id="credit-adjust-amount" class="input-text" min="1" step="1" value="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="credit-adjust-reason">Reason (Mandatory)</label>
+        <select id="credit-adjust-reason" class="select-input">
+          <option value="Print quality issue">Print quality issue</option>
+          <option value="Billing error">Billing error</option>
+          <option value="Goodwill credit">Goodwill credit</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="credit-adjust-notes">Free-text Notes (Optional)</label>
+        <textarea id="credit-adjust-notes" class="input-text" placeholder="Explain details..." style="height: 60px; resize: none;"></textarea>
+      </div>
+      <button class="btn btn-operator" style="width: 100%;" onclick="confirmCreditAdjustment()">Confirm Adjustment</button>
+    </div>
+  </div>
 
-      <div style="font-size: 16px; font-weight: 700; color: var(--text-main);" id="upiPayAmountLabel">₹14.00</div>
-      <p style="font-size: 10px; color: var(--text-muted);">UPI ID: copycampus@ybl</p>
-
-      <div style="width: 100%; margin-top: 8px;">
-        <button class="btn btn-student" style="width: 100%;" onclick="simulateUpiAppIntent()">📱 Open in Phone UPI App</button>
-        <div style="height: 1px; background-color: var(--border-color); margin: 16px 0;"></div>
-        <button class="btn btn-student-outline" style="width: 100%;" onclick="confirmPaymentAndSubmitOrder()">✅ I've paid (Verify)</button>
+  <!-- MODAL: END OF SHIFT SUMMARY -->
+  <div class="custom-modal" id="modal-end-shift" onclick="handleOutsideModalClick(event, 'modal-end-shift')">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 class="sentence-case">End of Shift Summary</h2>
+        <button class="modal-close" onclick="closeModal('modal-end-shift')">✕</button>
+      </div>
+      <div style="background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+        <div class="flex-between" style="border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+          <strong>Session Started</strong>
+          <span id="shift-started-time" style="font-size: 12px; color: var(--text-secondary);">19 Jun 2026, 12:00</span>
+        </div>
+        <div class="flex-between">
+          <span>Orders Completed</span>
+          <strong id="shift-completed-orders">0</strong>
+        </div>
+        <div class="flex-between">
+          <span>Total Pages Printed</span>
+          <strong id="shift-total-pages">0</strong>
+        </div>
+        <div class="flex-between" style="font-size: 12px; padding-left: 12px; color: var(--text-secondary);">
+          <span>├ B&W Pages</span>
+          <span id="shift-bw-pages">0</span>
+        </div>
+        <div class="flex-between" style="font-size: 12px; padding-left: 12px; color: var(--text-secondary);">
+          <span>└ Color Pages</span>
+          <span id="shift-color-pages">0</span>
+        </div>
+        <div class="flex-between">
+          <span>Revenue (UPI)</span>
+          <strong id="shift-revenue-upi">₹0.00</strong>
+        </div>
+        <div class="flex-between">
+          <span>Credits Redeemed</span>
+          <strong id="shift-credits-redeemed">0 pages</strong>
+        </div>
+        <div class="flex-between">
+          <span>Paper Consumed</span>
+          <strong id="shift-paper-consumed">0 sheets</strong>
+        </div>
+        <div class="flex-between" style="border-top: 1px solid var(--border); padding-top: 6px;">
+          <span>Unresolved Problem Orders</span>
+          <strong id="shift-unresolved-problems" class="badge badge-flagged" style="font-size: 11px;">0</strong>
+        </div>
+      </div>
+      <div class="flex-row" style="margin-top: 8px;">
+        <button class="btn btn-operator-outline flex-1" onclick="exportShiftCSV()">Export CSV</button>
+        <button class="btn btn-operator flex-1" onclick="closeShiftSession()">Close Shift</button>
       </div>
     </div>
   </div>
 
-  <!-- SEMESTER CREDITS PREPAID PACKS PURCHASE MODAL -->
-  <div class="custom-modal" id="buyCreditsModal">
+  <!-- MODAL: KEYBOARD SHORTCUTS HELP -->
+  <div class="custom-modal" id="modal-shortcuts" onclick="handleOutsideModalClick(event, 'modal-shortcuts')">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 class="sentence-case">Buy Semester Credit Pack</h2>
-        <button class="modal-close" onclick="closeBuyCreditsModal()">✕</button>
+        <h2 class="sentence-case">Keyboard Shortcuts Help</h2>
+        <button class="modal-close" onclick="closeModal('modal-shortcuts')">✕</button>
       </div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Get discounted rates on bulk print pages.</p>
-
-      <div class="flex-column" style="gap: 10px;">
-        <!-- Pack 1 -->
-        <div class="card flex-between" style="margin: 0; padding: 12px; cursor: pointer; border-color: var(--color-student);" onclick="buyCredits(50, 45)">
-          <div>
-            <div style="font-weight: 700; font-size: 14px;">50 Pages Starter</div>
-            <div style="font-size: 11px; color: var(--text-muted);">₹0.90 per page</div>
-          </div>
-          <div class="btn btn-student" style="padding: 6px 12px; font-size: 12px;">₹45</div>
-        </div>
-        
-        <!-- Pack 2 -->
-        <div class="card flex-between" style="margin: 0; padding: 12px; cursor: pointer; border-color: var(--color-student);" onclick="buyCredits(200, 150)">
-          <div>
-            <div style="font-weight: 700; font-size: 14px;">200 Pages Standard</div>
-            <div style="font-size: 11px; color: var(--text-muted);">₹0.75 per page • Save 25%</div>
-          </div>
-          <div class="btn btn-student" style="padding: 6px 12px; font-size: 12px;">₹150</div>
-        </div>
-
-        <!-- Pack 3 (Recommended) -->
-        <div class="card flex-between" style="margin: 0; padding: 12px; cursor: pointer; border-color: var(--color-student); border-width: 2px; position: relative;" onclick="buyCredits(500, 300)">
-          <span style="position: absolute; top: -10px; right: 12px; background-color: var(--color-student); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700;">BEST VALUE</span>
-          <div>
-            <div style="font-weight: 700; font-size: 14px;">500 Pages Semester Pro</div>
-            <div style="font-size: 11px; color: var(--text-muted);">₹0.60 per page • Save 40%</div>
-          </div>
-          <div class="btn btn-student" style="padding: 6px 12px; font-size: 12px;">₹300</div>
-        </div>
-      </div>
-      
-      <button class="btn btn-student-outline" style="width: 100%; border: none; font-size: 11px; margin-top: 8px;" onclick="closeBuyCreditsModal()">Cancel</button>
+      <table class="ledger-table" style="margin-top: 0;">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Action Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>N</strong></td>
+            <td>Focus/scroll to the next Queued order in the active list.</td>
+          </tr>
+          <tr>
+            <td><strong>P</strong></td>
+            <td>Mark the currently highlighted focused order as "Printing".</td>
+          </tr>
+          <tr>
+            <td><strong>R</strong></td>
+            <td>Mark the currently highlighted focused order as "Ready".</td>
+          </tr>
+          <tr>
+            <td><strong>C</strong></td>
+            <td>Mark the currently highlighted focused order as "Collected".</td>
+          </tr>
+          <tr>
+            <td><strong>F</strong></td>
+            <td>Open the problem flag reason dropdown on the focused order.</td>
+          </tr>
+          <tr>
+            <td><strong>?</strong></td>
+            <td>Open this keyboard shortcut reference modal guide.</td>
+          </tr>
+          <tr>
+            <td><strong>Esc</strong></td>
+            <td>Exit Focus Mode / Close active modals.</td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-operator" style="width: 100%;" onclick="closeModal('modal-shortcuts')">Close Guide</button>
     </div>
   </div>
 
-  <!-- SIMULATOR CONTROL DRAWER & NOTIFICATION LOGS -->
-  <div class="simulator-panel" id="simulatorPanel">
-    <div class="simulator-header">
-      <span style="font-weight: 700; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted);">🤖 Simulation Console</span>
-      <button style="border: none; background: none; font-size: 14px; cursor: pointer;" onclick="toggleSimulator()">✕</button>
-    </div>
-    
-    <div class="simulator-body">
-      <!-- File auto-delete scanner simulator -->
-      <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background-color: #f8fafc;">
-        <h4 style="font-size: 11px; margin-bottom: 4px;">48-Hour Cloud File Deletion Job</h4>
-        <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
-          <button class="btn btn-operator" style="padding: 4px 10px; font-size: 10px; border-radius: 4px;" onclick="simulateCloudCronJob()">Run Cron Scanner</button>
-          <span id="cronJobStatusBadge" class="badge badge-success" style="font-size: 9px;">Active</span>
-        </div>
-        <p style="font-size: 10px; margin-top: 6px;" id="cronJobResultText">Ready. Scans orders completed &gt;48h ago.</p>
-      </div>
+  <!-- Dynamic Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
 
-      <!-- Cloud Storage Status Info -->
-      <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background-color: #f0fdfa;">
-        <h4 style="font-size: 11px; color: var(--color-operator); margin-bottom: 2px;">Firebase Cloud Buckets</h4>
-        <div style="font-size: 10px; color: var(--text-muted); display: flex; justify-content: space-between;">
-          <span>Active files:</span>
-          <span id="simulatorActiveFilesCount" style="font-weight: 600;">0</span>
-        </div>
-      </div>
-
-      <!-- Twilio / FCM Push Alerts tracker -->
-      <div style="display: flex; flex-direction: column; flex: 1;">
-        <h4 style="font-size: 11px; margin-bottom: 6px;">Notification Alert Center (SMS / Push)</h4>
-        <div style="flex: 1; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px; max-height: 120px; overflow-y: auto; background-color: #0f172a; color: #38bdf8; font-family: monospace; font-size: 10px; line-height: 1.3;" id="notificationAlertLogs">
-          [System Initialized] Alert fallback ready...
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn btn-operator" style="position: fixed; bottom: 20px; right: 20px; border-radius: 9999px; font-size: 12px; z-index: 101;" onclick="toggleSimulator()" id="btnOpenSim">Simulate Systems</button>
-
+  <script src="cloud-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
