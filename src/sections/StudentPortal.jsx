@@ -173,52 +173,12 @@ export default function StudentPortal({
   // Operating Hours: 10:30 AM - 5:00 PM
   // Lunch Break: 1:00 PM - 1:50 PM
   const getShopStatus = () => {
-    let openHour = 7;
-    let openMin = 0;
-    let closeHour = 21;
-    let closeMin = 0;
-
-    if (operator?.open_hours_from) {
-      const [h, m] = operator.open_hours_from.split(':').map(Number);
-      if (!isNaN(h)) { openHour = h; openMin = m || 0; }
-    }
-    if (operator?.open_hours_to) {
-      const [h, m] = operator.open_hours_to.split(':').map(Number);
-      if (!isNaN(h)) { closeHour = h; closeMin = m || 0; }
-    }
-
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTimeInMinutes = currentHour * 60 + currentMinute;
-
-    const openTime = openHour * 60 + openMin;
-    const closeTime = closeHour * 60 + closeMin;
-
-    if (currentTimeInMinutes < openTime || currentTimeInMinutes >= closeTime) {
-      const formatTime = (h, m) => {
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const displayH = h % 12 || 12;
-        const displayM = String(m).padStart(2, '0');
-        return `${displayH}:${displayM} ${ampm}`;
-      };
-      const openStr = formatTime(openHour, openMin);
-      const closeStr = formatTime(closeHour, closeMin);
-
-      return {
-        status: 'Closed',
-        color: 'bg-rose-500',
-        text: 'bg-rose-50 border-rose-100 text-rose-700',
-        message: `Desk is currently CLOSED. Ordering is allowed from ${openStr} to ${closeStr} daily. Please place your order during operational hours.`
-      };
-    } else {
-      return {
-        status: 'Open',
-        color: 'bg-emerald-500',
-        text: 'bg-emerald-50 border-emerald-100 text-emerald-700',
-        message: 'Desk is OPEN! Orders placed today will be printed and ready for pickup tomorrow in college.'
-      };
-    }
+    return {
+      status: 'Open',
+      color: 'bg-emerald-500',
+      text: 'bg-emerald-50 border-emerald-100 text-emerald-700',
+      message: 'Desk is OPEN! Orders can be placed 24/7 and will be ready for pickup tomorrow in college.'
+    };
   };
 
   const shopStatus = getShopStatus();
