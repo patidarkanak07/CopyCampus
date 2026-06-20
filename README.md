@@ -1,38 +1,76 @@
-# CopyCampus 🖨️ — Campus Print-on-Demand Web App
+# 📄 CopyCampus — Campus Print Portal
 
-**CopyCampus** is a mobile-first, dual-sided web application designed to streamline campus printing. It provides students with a seamless interface to upload documents, configure print settings, pay via UPI/prepaid credits, and track orders in real-time, while offering campus print shop operators a unified dashboard to manage the printing queue, monitor earnings, and manage paper stock.
+> A smart, modern print-ordering web app built for college students and operators.
 
----
-
-## 🌟 Key Features
-
-### 👨‍🎓 Student App (Blue Theme)
-- **Document Upload & Configure**: Drag-and-drop file uploader (supporting PDF, PNG, JPG, DOCX, and PPTX with simulated PDF auto-conversion) plus direct import from **Google Drive**.
-- **Page Preview**: Live visual document previews and page count checks.
-- **Print Parameters**: Custom settings for color mode (B&W or Color), layout (single/double-sided), paper size, page ranges, binding options (stapled, spiral, softcover), and campus pickup points.
-- **Cost Estimator**: Real-time pricing calculator that updates dynamically as options are configured.
-- **Flexible Payments**: Choice of payment via **prepaid Semester Credits packs** (e.g., 500 pages for ₹300) or pay-per-print via **instant UPI QR code scanning and deep-links**.
-- **Real-Time Order Tracking**: 5-stage status progress tracking (Uploaded → Queued → Printing → Ready → Collected) with integrated reprint controls.
-- **Privacy First**: Explicit upload privacy banner and a comprehensive privacy page detailing document encryption and automatic 48-hour deletion.
-
-### 👩‍🔧 Operator Dashboard (Teal Theme)
-- **Live Print Queue**: Incoming print orders sorted by submission timestamp with print specifications, payment status, and page counts.
-- **One-Tap Status Updates**: Direct progression buttons (Start Print, Mark Ready, Handed Over) that update student timelines.
-- **System Notification Console**: Simulated Twilio SMS alerts and FCM push notifications.
-- **Prepaid Ledger**: Real-time log of student page credits purchases and deductions.
-- **Earning Summaries**: Real-time accounting split by UPI cash revenue and page credits redeemed.
-- **Inventory Stock Planner**: Track processed page counts and B&W vs. Color stock requirements.
+🌐 **Live Site:** [https://patidarkanak07.github.io/CopyCampus/](https://patidarkanak07.github.io/CopyCampus/)
 
 ---
 
-## 🎨 Visual Style & Design System
-- **Modern Flat UI**: A clean, spacious interface utilizing Google's *Plus Jakarta Sans* font, flat card blocks, and solid border lines without heavy shadows or gradients.
-- **Two-Color System**: A distinct color separation scheme where **Blue (`#2563EB`)** is used for student actions and **Teal (`#0D9488`)** is used for operator dashboard features.
-- **Responsive Presentation**: On desktop, the page renders a side-by-side view (a simulated mobile phone frame for the Student App and a full-size workspace for the Operator Terminal). On mobile viewports, the app shifts into tabs for clean viewing.
+## ✨ Features
+
+### For Students
+- 📤 **Upload PDFs only** — strict PDF-only enforcement with auto page count detection
+- 📑 **Custom Page Range** — print all pages or select a specific range (e.g., pages 20–30)
+- 🎨 **Paper Type Selection** — Normal (₹2/pg), Bond (₹5/pg), Glossy (₹50/pg)
+- 🖨️ **Color & Side Options** — B&W or Color, Single or Double-Sided
+- 📍 **Pick-up Locations** — Front Gate, Back Gate, Block 1/2/3, Basketball Court, Sports Complex, Library, Reception
+- ⏰ **Lunch Slot Collection** — choose your pickup time during the lunch break (1:00 PM – 1:50 PM)
+- 💳 **UPI Payment** — direct payment via UPI QR code, no credits or wallets
+- 🔔 **Notifications Tab** — real-time alerts when your order status changes
+- 💬 **Help Desk Chat** — message the operator directly
+- 📋 **Order Tracker** — live progress bar from Ordered → Accepted → Printing → Ready → Delivered
+- ⚠️ **Disclaimer** — persistent non-refundable disclaimer on every order
+
+### For Operators
+- 📊 **Dashboard** — see all incoming orders with full print specs (sides, paper, range, location, slot, finishing)
+- 🔄 **Status Updates** — accept, print, dispatch, and complete orders
+- 📢 **Broadcast Message** — send announcements to all students (e.g., "I'm absent today")
+- 💰 **Revenue Tracking** — total earnings, UPI withdrawals, pending amounts
+- 👥 **User Management** — view registered users, credit purchases, and usage stats
+- 🎛️ **Pricing Control** — adjust per-page prices, color surcharges, finishing costs
+- 💬 **Individual Messaging** — chat with each student separately
 
 ---
 
-## 🛠️ Stack & Cloud Configuration
-- **Frontend**: Vanilla HTML5, CSS3 (CSS Variables layout), and ES6 JavaScript.
-- **Cloud Storage (Boilerplate)**: Production configuration template for uploading directly to **Firebase Storage** (via standard resumable upload tasks) and initializing the **Google Drive Picker API**.
-- **Auto-Deletion Cron Job**: Serverless **Firebase Cloud Function** template that runs hourly to delete document binaries from Firebase Storage 48 hours after they are collected, ensuring absolute student privacy.
+## ⏰ Order Hours
+- Orders accepted: **7:00 AM – 9:00 PM**
+- Collection: **Lunch break (1:00 PM – 1:50 PM)**
+- Printouts delivered: **next day in college**
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React 18 + Vite |
+| Styling | Tailwind CSS |
+| Icons | Lucide React |
+| Storage | LocalStorage (mock DB) |
+| Deployment | GitHub Pages |
+
+---
+
+## 🚀 Run Locally
+
+```bash
+git clone https://github.com/patidarkanak07/CopyCampus.git
+cd CopyCampus
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 📦 Build & Deploy
+
+```bash
+npm run build
+npm run deploy
+```
+
+---
+
+Made with ❤️ for campus life.
