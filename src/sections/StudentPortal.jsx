@@ -388,19 +388,19 @@ export default function StudentPortal({
     <div className="min-h-screen bg-slate-50 flex flex-col relative w-full select-none font-sans">
       
       {/* Header bar */}
-      <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40 shrink-0">
+      <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-4 md:px-6 flex items-center justify-between sticky top-0 z-40 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-xl tracking-tight text-slate-800">
             Copy<span className="font-extrabold text-brand">Campus</span>
           </span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand/10 text-brand">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand/10 text-brand hidden sm:inline-block">
             Student Terminal
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           {/* Shop Status Badge */}
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold border shadow-sm transition-colors duration-200 ${
+          <div className={`flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-1.5 rounded-xl text-xs font-extrabold border shadow-sm transition-colors duration-200 ${
             shopStatus.status === 'Open' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' :
             shopStatus.status === 'Lunch Break' ? 'bg-amber-50 text-amber-700 border-amber-200/60' :
             'bg-rose-50 text-rose-700 border-rose-200/60'
@@ -410,28 +410,36 @@ export default function StudentPortal({
               shopStatus.status === 'Lunch Break' ? 'bg-amber-500 animate-pulse' :
               'bg-rose-500'
             }`} />
-            <span>Shop: {shopStatus.status}</span>
+            <span className="hidden sm:inline">Shop: {shopStatus.status}</span>
+            <span className="sm:hidden">{shopStatus.status === 'Open' ? 'Open' : 'Closed'}</span>
           </div>
 
           <div className="w-px h-6 bg-slate-200" />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="flex flex-col text-right">
-              <span className="text-sm font-semibold text-slate-700">{student.name}</span>
-              <span className="text-xs text-slate-500">{student.roll_no} · {student.branch}</span>
+              <span className="text-xs md:text-sm font-semibold text-slate-700 leading-tight">{student.name}</span>
+              <span className="text-[10px] text-slate-500 hidden md:block">{student.roll_no} · {student.branch}</span>
             </div>
-            <div className="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm">
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs md:text-sm">
               {getStudentInitials(student.name)}
             </div>
+            <button
+              onClick={onLogout}
+              title="Log Out Session"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+            >
+              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main split-pane content */}
-      <div className="flex flex-1 h-[calc(100vh-64px)]">
+      <div className="flex flex-col md:flex-row flex-1 min-h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden">
         
         {/* Left Sidebar Navigation */}
-        <aside className="w-64 border-r border-slate-200 bg-white flex flex-col justify-between py-6 px-4 shrink-0">
+        <aside className="hidden md:flex w-64 border-r border-slate-200 bg-white flex-col justify-between py-6 px-4 shrink-0">
           <div className="space-y-1.5">
             <button
               onClick={() => { setActiveTab('print'); setOrderReceipt(null); }}
@@ -489,7 +497,7 @@ export default function StudentPortal({
         </aside>
 
         {/* Right workspace panels */}
-        <main className="flex-1 p-8 overflow-y-auto max-w-5xl mx-auto w-full">
+        <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto max-w-5xl mx-auto w-full">
           
           {/* Main workspace tabs */}
           <>
@@ -566,34 +574,33 @@ export default function StudentPortal({
                           {/* Page Range */}
                           <div className="md:col-span-2 bg-slate-50 border border-slate-200/60 p-4 rounded-xl space-y-2">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Page Range</span>
-                            <div className="flex gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                               <button type="button" onClick={() => setPageRangeMode('All')}
-                                className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all ${pageRangeMode === 'All' ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
+                                className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${pageRangeMode === 'All' ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
                                 All Pages ({pdfTotalPages})
                               </button>
                               <button type="button" onClick={() => setPageRangeMode('Custom')} disabled={!fileName}
-                                className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${pageRangeMode === 'Custom' ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
+                                className={`py-2.5 rounded-xl border text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${pageRangeMode === 'Custom' ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
                                 Custom Range
                               </button>
                             </div>
                             {pageRangeMode === 'Custom' && (
-                              <div className="flex items-center gap-3 pt-1">
-                                <div className="flex-1 space-y-1">
+                              <div className="grid grid-cols-3 gap-2 items-end pt-1">
+                                <div className="space-y-1">
                                   <label className="text-[10px] font-bold text-slate-400 block">From Page</label>
                                   <input type="number" min={1} max={toPage} value={fromPage}
                                     onChange={e => setFromPage(Math.max(1, Math.min(parseInt(e.target.value)||1, toPage)))}
-                                    className="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-brand bg-white font-semibold text-center" />
+                                    className="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-brand bg-white font-semibold text-center" />
                                 </div>
-                                <span className="text-slate-300 font-bold mt-5">→</span>
-                                <div className="flex-1 space-y-1">
+                                <div className="space-y-1">
                                   <label className="text-[10px] font-bold text-slate-400 block">To Page</label>
                                   <input type="number" min={fromPage} max={pdfTotalPages} value={toPage}
                                     onChange={e => setToPage(Math.max(fromPage, Math.min(parseInt(e.target.value)||fromPage, pdfTotalPages)))}
-                                    className="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-brand bg-white font-semibold text-center" />
+                                    className="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-brand bg-white font-semibold text-center" />
                                 </div>
-                                <div className="flex-1 bg-brand/5 border border-brand/10 rounded-xl p-2.5 text-center mt-5">
-                                  <span className="text-[10px] text-slate-400 block">Printing</span>
-                                  <span className="text-sm font-black text-brand">{pagesCount} pgs</span>
+                                <div className="bg-brand/5 border border-brand/10 rounded-xl p-1.5 text-center">
+                                  <span className="text-[9px] text-slate-400 block leading-none">Printing</span>
+                                  <span className="text-xs font-black text-brand mt-0.5 block leading-tight">{pagesCount} pgs</span>
                                 </div>
                               </div>
                             )}
@@ -602,16 +609,16 @@ export default function StudentPortal({
                           {/* Paper Type */}
                           <div className="md:col-span-2 space-y-2">
                             <label className="font-bold text-slate-500 block">Paper Type</label>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-1.5 md:gap-2">
                               {[
                                 { id: 'Normal', label: 'Normal', sub: '₹2/pg base' },
                                 { id: 'Bond', label: 'Bond Paper', sub: '₹5/pg base' },
                                 { id: 'Glossy', label: 'Glossy', sub: '₹50/pg base' }
                               ].map(pt => (
                                 <button key={pt.id} type="button" onClick={() => setPaperType(pt.id)}
-                                  className={`py-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${paperType === pt.id ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
-                                  <span>{pt.label}</span>
-                                  <span className={`text-[10px] font-medium ${paperType === pt.id ? 'text-brand/70' : 'text-slate-400'}`}>{pt.sub}</span>
+                                  className={`py-2 px-1 rounded-xl border text-[10px] sm:text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 ${paperType === pt.id ? 'border-brand bg-brand/5 text-brand' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                                  <span className="truncate w-full text-center">{pt.label}</span>
+                                  <span className={`text-[8px] sm:text-[10px] font-medium leading-none ${paperType === pt.id ? 'text-brand/70' : 'text-slate-400'}`}>{pt.sub}</span>
                                 </button>
                               ))}
                             </div>
@@ -1098,6 +1105,56 @@ export default function StudentPortal({
           </div>
         </div>
       )}
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200/80 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+        <button
+          onClick={() => { setActiveTab('print'); setOrderReceipt(null); }}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            activeTab === 'print' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <Upload className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-bold">Order Print</span>
+        </button>
+
+        <button
+          onClick={() => { setActiveTab('track'); setOrderReceipt(null); }}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            activeTab === 'track' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <Clock className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-bold">Track Queue</span>
+        </button>
+
+        <button
+          onClick={() => { setActiveTab('notifications'); setOrderReceipt(null); }}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all relative ${
+            activeTab === 'notifications' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <div className="relative">
+            <Bell className="w-5 h-5" />
+            {notifications.length > 0 && (
+              <span className="absolute -top-1 -right-1.5 bg-brand text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
+                {notifications.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] mt-1 font-bold">Alerts</span>
+        </button>
+
+        <button
+          onClick={() => { setActiveTab('chat'); setOrderReceipt(null); }}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            activeTab === 'chat' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <MessageSquare className="w-5 h-5" />
+          <span className="text-[10px] mt-1 font-bold">Help Desk</span>
+        </button>
+      </div>
 
     </div>
   );

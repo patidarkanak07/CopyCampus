@@ -17,7 +17,12 @@ import {
   X,
   FileCheck,
   User,
-  Users
+  Users,
+  LayoutGrid,
+  FileText,
+  IndianRupee,
+  MessageSquare,
+  Settings
 } from 'lucide-react';
 
 export default function App() {
@@ -568,14 +573,14 @@ export default function App() {
         onNavigateToAlerts={() => handleNavigateToSection('alerts')} 
       />
 
-      <div className="flex flex-1">
+      <div className="flex flex-col md:flex-row flex-1 min-h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden">
         <Sidebar 
           currentSection={currentSection} 
           onSelectSection={handleNavigateToSection} 
           unreadAlertsCount={unreadAlertsCount} 
         />
 
-        <main className="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-y-auto max-w-7xl mx-auto w-full">
           {currentSection === 'dashboard' && (
             <DashboardHome 
               onNavigate={handleNavigateToSection} 
@@ -649,6 +654,59 @@ export default function App() {
           )}
         </main>
 
+      </div>
+
+      {/* Operator Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200/80 flex items-center justify-around px-2 py-1 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+        <button
+          onClick={() => handleNavigateToSection('dashboard')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            currentSection === 'dashboard' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <LayoutGrid className="w-5 h-5" />
+          <span className="text-[10px] mt-1">Dashboard</span>
+        </button>
+
+        <button
+          onClick={() => handleNavigateToSection('orders')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            currentSection === 'orders' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <FileText className="w-5 h-5" />
+          <span className="text-[10px] mt-1">Orders</span>
+        </button>
+
+        <button
+          onClick={() => handleNavigateToSection('earnings')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            currentSection === 'earnings' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <IndianRupee className="w-5 h-5" />
+          <span className="text-[10px] mt-1">Earnings</span>
+        </button>
+
+        <button
+          onClick={() => handleNavigateToSection('messages')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            currentSection === 'messages' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <MessageSquare className="w-5 h-5" />
+          <span className="text-[10px] mt-1">Messages</span>
+        </button>
+
+        <button
+          onClick={() => handleNavigateToSection('settings')}
+          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all ${
+            currentSection === 'settings' ? 'text-brand font-bold' : 'text-slate-500'
+          }`}
+        >
+          <Settings className="w-5 h-5" />
+          <span className="text-[10px] mt-1">Settings</span>
+        </button>
       </div>
 
     </div>

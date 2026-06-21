@@ -21,7 +21,7 @@ export default function Sidebar({ currentSection, onSelectSection, unreadAlertsC
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-200/80 bg-white flex flex-col justify-between h-[calc(100vh-64px)] sticky top-16 z-30 select-none">
+    <aside className="hidden md:flex w-64 border-r border-slate-200/80 bg-white flex-col justify-between h-[calc(100vh-64px)] sticky top-16 z-30 select-none">
       <div className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;

@@ -13,19 +13,19 @@ export default function TopBar({ operator, unreadAlertsCount, onNavigateToAlerts
   };
 
   return (
-    <header className="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
+    <header className="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md px-4 md:px-6 flex items-center justify-between sticky top-0 z-40">
       {/* Brand logo */}
       <div className="flex items-center gap-2">
         <span className="text-xl tracking-tight text-slate-800">
           Copy<span className="font-extrabold text-brand">Campus</span>
         </span>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand/10 text-brand">
+        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand/10 text-brand hidden sm:inline-block">
           Staff Terminal
         </span>
       </div>
 
       {/* Operator User Actions & Notifications */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         {/* Alerts Bell notification icon */}
         <button
           onClick={onNavigateToAlerts}
@@ -43,7 +43,7 @@ export default function TopBar({ operator, unreadAlertsCount, onNavigateToAlerts
 
         {/* Operator Profile */}
         <div className="flex items-center gap-3">
-          <div className="flex flex-col text-right">
+          <div className="hidden sm:flex flex-col text-right">
             <span className="text-sm font-semibold text-slate-700">{operator?.name || 'Loading Operator...'}</span>
             <span className="text-xs text-slate-500">{operator?.shop_name || 'Loading Shop...'}</span>
           </div>

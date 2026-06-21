@@ -6,7 +6,8 @@ import {
   User, 
   Sparkles, 
   Clock, 
-  AlertCircle 
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
@@ -15,6 +16,7 @@ export default function Messages({ students, messages, onAddMessage, addToast, i
   const [inputText, setInputText] = useState('');
   const [aiAgentActive, setAiAgentActive] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [activePane, setActivePane] = useState(initialStudentId ? 'chat' : 'list');
   
   const chatEndRef = useRef(null);
 
@@ -22,6 +24,7 @@ export default function Messages({ students, messages, onAddMessage, addToast, i
   useEffect(() => {
     if (initialStudentId) {
       setSelectedStudentId(initialStudentId);
+      setActivePane('chat');
     }
   }, [initialStudentId]);
 
@@ -126,7 +129,7 @@ export default function Messages({ students, messages, onAddMessage, addToast, i
       <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden h-[540px] flex">
         
         {/* Left Pane: Student lists */}
-        <div className="w-80 border-r border-slate-100 flex flex-col shrink-0 bg-slate-50/20">
+        <div className={`w-full md:w-80 border-r border-slate-100 flex flex-col shrink-0 bg-slate-50/20 ${activePane === 'chat' ? 'hidden md:flex' : 'flex'}`}>
           <div className="p-4 border-b border-slate-100">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Open Channels</span>
           </div>
@@ -140,7 +143,10 @@ export default function Messages({ students, messages, onAddMessage, addToast, i
               return (
                 <div
                   key={student.id}
-                  onClick={() => setSelectedStudentId(student.id)}
+                  onClick={() => {
+                    setSelectedStudentId(student.id);
+                    setActivePane('chat');
+                  }}
                   className={`p-4 flex items-start gap-3 cursor-pointer transition-colors ${
                     isSelected ? 'bg-brand/5 border-l-4 border-brand' : 'hover:bg-slate-50'
                   }`}
@@ -167,13 +173,23 @@ export default function Messages({ students, messages, onAddMessage, addToast, i
         </div>
 
         {/* Right Pane: Chat workspace */}
-        <div className="flex-1 flex flex-col justify-between bg-white relative">
+        <div className={`flex-1 flex flex-col justify-between bg-white relative ${activePane === 'list' ? 'hidden md:flex' : 'flex'}`}>
           
           {/* Header */}
           <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-            <div>
-              <span className="text-xs font-bold text-slate-800">{activeStudent?.name || 'Select Student'}</span>
-              <span className="text-[10px] text-slate-400 block mt-0.5">Roll: {activeStudent?.roll_no} · {activeStudent?.branch}</span>
+            <div className="flex items-center">
+              {/* Back button for mobile */}
+              <button
+                type="button"
+                onClick={() => setActivePane('list')}
+                className="md:hidden p-1.5 mr-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors focus:outline-none"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <span className="text-xs font-bold text-slate-800">{activeStudent?.name || 'Select Student'}</span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">Roll: {activeStudent?.roll_no} · {activeStudent?.branch}</span>
+              </div>
             </div>
 
             {/* AI Toggle Switch */}
