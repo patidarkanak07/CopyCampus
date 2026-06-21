@@ -244,8 +244,20 @@ export default function App() {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updates } : o));
   };
 
-  const handleUpdateStudent = (studentId, updates) => {
-    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, ...updates } : s));
+  const handleUpdateStudent = async (studentId, updates) => {
+    const { data, error } = await supabase.students.update(studentId, updates);
+    if (!error) {
+      setStudents(prev => prev.map(s => s.id === studentId ? { ...s, ...updates } : s));
+      if (sessionUser && sessionUser.id === studentId) {
+        setSessionUser(prev => ({ ...prev, name: updates.name || prev.name, email: updates.email || prev.email }));
+        const stored = localStorage.getItem('copycampus_operator_session');
+        if (stored) {
+          const userObj = JSON.parse(stored);
+          const newUserObj = { ...userObj, name: updates.name || userObj.name, email: updates.email || userObj.email };
+          localStorage.setItem('copycampus_operator_session', JSON.stringify(newUserObj));
+        }
+      }
+    }
   };
 
   const handleAddTransaction = async (txn) => {

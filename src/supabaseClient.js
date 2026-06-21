@@ -50,6 +50,9 @@ const getInitialMockData = () => {
         branch: 'Computer Science',
         section: 'A',
         roll_no: 'CS23B1024',
+        email: 'rahul@gmail.com',
+        password: 'print123',
+        wallet_balance: 350,
         total_orders: 15
       },
       {
@@ -58,6 +61,9 @@ const getInitialMockData = () => {
         branch: 'Electrical Engineering',
         section: 'B',
         roll_no: 'EE23B1045',
+        email: 'student@campus',
+        password: 'print123',
+        wallet_balance: 500,
         total_orders: 8
       },
       {
@@ -66,6 +72,9 @@ const getInitialMockData = () => {
         branch: 'Mechanical Engineering',
         section: 'C',
         roll_no: 'ME23B1012',
+        email: 'amit@gmail.com',
+        password: 'print123',
+        wallet_balance: 200,
         total_orders: 32
       },
       {
@@ -74,6 +83,9 @@ const getInitialMockData = () => {
         branch: 'Information Technology',
         section: 'A',
         roll_no: 'IT23B1090',
+        email: 'sneha@gmail.com',
+        password: 'print123',
+        wallet_balance: 150,
         total_orders: 5
       }
     ],
@@ -322,20 +334,18 @@ export const mockSupabase = {
         const user = { id: 'op-1', email, name: 'Mayank Kalbhor', role: 'operator' };
         localStorage.setItem('copycampus_operator_session', JSON.stringify(user));
         return { data: { user }, error: null };
-      } else if (email === 'student@campus' && password === 'print123') {
-        const user = { id: 'stud-2', email, name: 'Priya Patel', role: 'student' };
-        localStorage.setItem('copycampus_operator_session', JSON.stringify(user));
-        return { data: { user }, error: null };
       }
 
       // Check if student exists in local DB registered list
       const db = getDB();
       const matchedStudent = db.students.find(s => 
         s.roll_no === email || 
-        s.email === email || 
-        s.name.toLowerCase() === email.toLowerCase()
+        s.email === email
       );
       if (matchedStudent) {
+        if (matchedStudent.password && matchedStudent.password !== password) {
+          return { data: null, error: new Error('Invalid credentials. Password incorrect for this student.') };
+        }
         const user = { id: matchedStudent.id, email: matchedStudent.email || (matchedStudent.roll_no + '@campus'), name: matchedStudent.name, role: 'student' };
         localStorage.setItem('copycampus_operator_session', JSON.stringify(user));
         return { data: { user }, error: null };
@@ -357,11 +367,13 @@ export const mockSupabase = {
         id: newStudentId,
         name: options.data.name || email.split('@')[0],
         email: email,
+        password: password,
         branch: options.data.branch || 'N/A',
         section: 'A',
         roll_no: rollNo || 'N/A',
         phone: options.data.phone || 'N/A',
-        total_orders: 0
+        total_orders: 0,
+        wallet_balance: 500
       };
 
       db.students.push(newStudent);
