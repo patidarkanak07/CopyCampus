@@ -46,25 +46,6 @@ export default function StudentPortal({
   const [avatarOpen, setAvatarOpen] = useState(false);
   const student = students.find(s => s.id === studentId) || { id: studentId, name: 'Priya Patel', roll_no: 'EE23B1045' };
 
-  // Profile Settings States
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [profileName, setProfileName] = useState(student.name);
-  const [profileBranch, setProfileBranch] = useState(student.branch || '');
-  const [profileRollNo, setProfileRollNo] = useState(student.roll_no || '');
-  const [profilePhone, setProfilePhone] = useState(student.phone || '');
-  const [profileEmail, setProfileEmail] = useState(student.email || '');
-  const [profilePassword, setProfilePassword] = useState(student.password || '');
-
-  useEffect(() => {
-    if (student) {
-      setProfileName(student.name);
-      setProfileBranch(student.branch || '');
-      setProfileRollNo(student.roll_no || '');
-      setProfilePhone(student.phone || '');
-      setProfileEmail(student.email || '');
-      setProfilePassword(student.password || '');
-    }
-  }, [studentId, students]);
 
   // File Upload State
   const [fileObject, setFileObject] = useState(null);
@@ -383,37 +364,6 @@ export default function StudentPortal({
     }
   };
 
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    if (!profileName.trim()) {
-      addToast('Full Name is required.', 'warning');
-      return;
-    }
-    if (!profileRollNo.trim()) {
-      addToast('College Enrollment Number is required.', 'warning');
-      return;
-    }
-    if (!profileEmail.trim()) {
-      addToast('Email Address is required.', 'warning');
-      return;
-    }
-
-    const updates = {
-      name: profileName,
-      branch: profileBranch,
-      roll_no: profileRollNo,
-      phone: profilePhone,
-      email: profileEmail
-    };
-
-    if (profilePassword) {
-      updates.password = profilePassword;
-    }
-
-    await onUpdateStudent(student.id, updates);
-    addToast('Profile updated successfully! 👤', 'success');
-    setProfileModalOpen(false);
-  };
 
 
 
@@ -586,16 +536,6 @@ export default function StudentPortal({
                       className="w-full text-left px-3 py-2 rounded-xl text-slate-650 dark:text-slate-355 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
                     >
                       Track Active Jobs
-                    </button>
-                    <button
-                      onClick={() => {
-                        setProfileModalOpen(true);
-                        setAvatarOpen(false);
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-slate-650 dark:text-slate-355 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold flex items-center gap-1.5"
-                    >
-                      <User className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Manage Profile Settings</span>
                     </button>
                   </div>
 
@@ -1554,110 +1494,6 @@ export default function StudentPortal({
                 Track Print Queue
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* PROFILE SETTINGS MODAL */}
-      {profileModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl max-w-md w-full p-6 border border-white/40 dark:border-slate-800/40 shadow-2xl space-y-4 animate-scale-up">
-            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <User className="w-5 h-5 text-brand dark:text-brand-light" />
-                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Manage Profile</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setProfileModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650 dark:hover:text-slate-205 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveProfile} className="space-y-3.5 text-left text-xs font-semibold">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  value={profileName}
-                  onChange={(e) => setProfileName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-semibold"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Email Address / Gmail</label>
-                <input
-                  type="email"
-                  required
-                  value={profileEmail}
-                  onChange={(e) => setProfileEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-semibold"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Branch</label>
-                  <select
-                    value={profileBranch}
-                    onChange={(e) => setProfileBranch(e.target.value)}
-                    className="w-full px-2 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-955 text-slate-750 dark:text-slate-200 font-semibold"
-                  >
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Electrical Engineering">Electrical Engineering</option>
-                    <option value="Mechanical Engineering">Mechanical Engineering</option>
-                    <option value="Information Technology">Information Technology</option>
-                    <option value="Civil Engineering">Civil Engineering</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Phone Number</label>
-                  <input
-                    type="tel"
-                    required
-                    value={profilePhone}
-                    onChange={(e) => setProfilePhone(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">College Enrollment No</label>
-                  <input
-                    type="text"
-                    required
-                    value={profileRollNo}
-                    onChange={(e) => setProfileRollNo(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-semibold"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Change Password</label>
-                  <input
-                    type="password"
-                    placeholder="New password"
-                    value={profilePassword}
-                    onChange={(e) => setProfilePassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:border-brand bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-semibold"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 bg-gradient-to-r from-brand to-indigo-650 hover:from-brand-dark hover:to-indigo-750 text-white rounded-xl font-bold shadow-md shadow-brand/10 transition-all hover:scale-[1.01] duration-150 mt-4"
-              >
-                Save Changes
-              </button>
-            </form>
           </div>
         </div>
       )}
