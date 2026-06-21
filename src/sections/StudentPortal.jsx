@@ -444,6 +444,20 @@ export default function StudentPortal({
 
           <div className="w-px h-6 bg-slate-200 dark:bg-slate-800" />
 
+          {/* Direct Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => toggleDarkMode()}
+            className="p-2 text-slate-500 dark:text-slate-400 hover:text-brand dark:hover:text-brand-light hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-all focus:outline-none"
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-amber-500" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
+          </button>
+
           {/* Interactive Avatar Dropdown Menu */}
           <div className="relative">
             <button
