@@ -58,6 +58,20 @@ export default function App() {
   const [filterOrderId, setFilterOrderId] = useState(null);
   const [chatStudentId, setChatStudentId] = useState(null);
 
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('copycampus_theme') === 'dark');
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('copycampus_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('copycampus_theme', 'light');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
+
   // Toast states
   const [toasts, setToasts] = useState([]);
 
@@ -526,6 +540,8 @@ export default function App() {
         onAddMessage={handleAddMessage}
         onLogout={handleLogout}
         addToast={addToast}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
       />
     );
   }
@@ -534,34 +550,32 @@ export default function App() {
   // OPERATOR TERMINAL SCREEN
   // ==========================================
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col relative select-none">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col relative select-none transition-colors duration-200">
       
       {/* Toast Alert stack */}
-      <div className="fixed bottom-5 right-5 space-y-2 z-50 pointer-events-none max-w-sm w-full">
+      <div className="fixed bottom-5 right-5 space-y-2.5 z-50 pointer-events-none max-w-sm w-full">
         {toasts.map(t => (
           <div 
             key={t.id} 
-            className={`pointer-events-auto p-4 rounded-xl shadow-lg border flex items-center justify-between gap-3 text-xs font-semibold bg-white ${
+            className={`pointer-events-auto p-4 rounded-2xl shadow-xl border flex items-center justify-between gap-3 text-xs font-extrabold transition-all duration-300 ${
               t.type === 'success' 
-                ? 'border-emerald-100 text-slate-700 bg-emerald-50/10' 
-                : t.type === 'warning' 
-                  ? 'border-rose-100 text-slate-700 bg-rose-50/10' 
-                  : 'border-slate-200 text-slate-700'
-            }`}
+                ? 'bg-emerald-50/75 dark:bg-emerald-950/70 border-emerald-200/50 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300' 
+                : 'bg-rose-50/75 dark:bg-rose-950/70 border-rose-200/50 dark:border-rose-800/40 text-rose-800 dark:text-rose-300'
+            } backdrop-blur-md`}
           >
-            <div className="flex items-center gap-2">
-              <div className={`p-1 rounded-full shrink-0 ${
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className={`p-1.5 rounded-full shrink-0 ${
                 t.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
               }`}>
-                <FileCheck className="w-3 h-3" />
+                <FileCheck className="w-3.5 h-3.5" />
               </div>
-              <span>{t.message}</span>
+              <span className="truncate">{t.message}</span>
             </div>
             <button 
               onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
-              className="text-slate-400 hover:text-slate-600 focus:outline-none"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none shrink-0"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         ))}
@@ -571,6 +585,8 @@ export default function App() {
         operator={operator} 
         unreadAlertsCount={unreadAlertsCount} 
         onNavigateToAlerts={() => handleNavigateToSection('alerts')} 
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
       />
 
       <div className="flex flex-col md:flex-row flex-1 min-h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden">
