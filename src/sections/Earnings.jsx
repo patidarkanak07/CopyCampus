@@ -95,25 +95,17 @@ export default function Earnings({
       }
     }
 
-    const { error } = await supabase.transactions.insert({
-      operator_id: 'op-1',
+    // Single insert delegation via onAddTransaction (which inserts transaction in App.jsx)
+    onAddTransaction({
       order_id: null,
       type: 'Debit',
       amount: amount,
       note: `Payout: Withdrawn to UPI (${withdrawUpi})`
     });
 
-    if (!error) {
-      onAddTransaction({
-        order_id: null,
-        type: 'Debit',
-        amount: amount,
-        note: `Payout: Withdrawn to UPI (${withdrawUpi})`
-      });
-      addToast(`Payout of ₹${amount} initiated to ${withdrawUpi}! 💰`, 'success');
-      setWithdrawAmount('');
-      setWithdrawModalOpen(false);
-    }
+    addToast(`Payout of ₹${amount} initiated to ${withdrawUpi}! 💰`, 'success');
+    setWithdrawAmount('');
+    setWithdrawModalOpen(false);
   };
 
   // Handle export CSV

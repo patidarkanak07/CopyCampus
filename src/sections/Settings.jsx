@@ -35,6 +35,9 @@ export default function SettingsView({ operator, onUpdateOperator, onLogout, add
     }
   };
   const [upiId, setUpiId] = useState(operator?.upi_id || '');
+  const [razorpayEnabled, setRazorpayEnabled] = useState(operator?.razorpay_enabled || false);
+  const [razorpayKeyId, setRazorpayKeyId] = useState(operator?.razorpay_key_id || '');
+  const [razorpayKeySecret, setRazorpayKeySecret] = useState(operator?.razorpay_key_secret || '');
   const [openFrom, setOpenFrom] = useState(operator?.open_hours_from || '09:00');
   const [openTo, setOpenTo] = useState(operator?.open_hours_to || '18:00');
   const [openDays, setOpenDays] = useState(operator?.open_days || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
@@ -108,14 +111,19 @@ export default function SettingsView({ operator, onUpdateOperator, onLogout, add
     }
   };
 
-  // Handle saving UPI
-  const handleSaveUPI = async () => {
+  // Handle saving Payment Gateway & UPI settings
+  const handleSavePaymentSettings = async () => {
     if (!upiId.trim()) return;
-    const updates = { upi_id: upiId };
+    const updates = { 
+      upi_id: upiId,
+      razorpay_enabled: razorpayEnabled,
+      razorpay_key_id: razorpayKeyId,
+      razorpay_key_secret: razorpayKeySecret
+    };
     const { data, error } = await supabase.operators.update(updates);
     if (!error) {
       onUpdateOperator(updates);
-      addToast('UPI settings configured. payouts active.', 'success');
+      addToast('Payment gateway and payout configurations updated successfully! 💳', 'success');
     }
   };
 
@@ -355,14 +363,14 @@ export default function SettingsView({ operator, onUpdateOperator, onLogout, add
           </button>
         </div>
 
-        {/* Card 3: UPI & Payment Payouts */}
+        {/* Card 3: Payment Gateway & Payout Settings */}
         <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-extrabold text-slate-700 flex items-center gap-1.5 border-b border-slate-100 pb-2 mb-4">
-              <CreditCard className="w-4.5 h-4.5 text-brand" /> UPI Payout Settings
+              <CreditCard className="w-4.5 h-4.5 text-brand" /> Payment Configurations
             </h3>
 
-            <div className="space-y-3.5 text-xs">
+            <div className="space-y-4 text-xs">
               <div>
                 <label className="text-slate-400 font-bold block mb-1">Operator Merchant UPI ID</label>
                 <input
@@ -372,16 +380,56 @@ export default function SettingsView({ operator, onUpdateOperator, onLogout, add
                   className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-brand font-semibold text-slate-700"
                   placeholder="e.g. name@upi"
                 />
-                <span className="text-[10px] text-slate-400 block mt-1">This ID is masked on receipts but used for withdrawals routing.</span>
+                <span className="text-[10px] text-slate-400 block mt-1">Used for manual withdrawal routing and UPI backup.</span>
+              </div>
+
+              <div className="border-t border-slate-100 pt-3 space-y-3">
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={razorpayEnabled}
+                    onChange={(e) => setRazorpayEnabled(e.target.checked)}
+                    className="rounded border-slate-200 accent-brand w-4.5 h-4.5"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-700 block">Enable Razorpay Checkout</span>
+                    <span className="text-[10px] text-slate-400 block">Route student payments via Razorpay Gateway</span>
+                  </div>
+                </label>
+
+                {razorpayEnabled && (
+                  <div className="space-y-3 pl-7 animate-fade-in">
+                    <div>
+                      <label className="text-slate-400 font-bold block mb-1">Razorpay Key ID</label>
+                      <input
+                        type="text"
+                        value={razorpayKeyId}
+                        onChange={(e) => setRazorpayKeyId(e.target.value)}
+                        className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-brand font-semibold text-slate-700"
+                        placeholder="rzp_test_xxxxxxxx"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 font-bold block mb-1">Razorpay Key Secret</label>
+                      <input
+                        type="password"
+                        value={razorpayKeySecret}
+                        onChange={(e) => setRazorpayKeySecret(e.target.value)}
+                        className="w-full border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-brand font-semibold text-slate-700"
+                        placeholder="••••••••••••••••"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           <button
-            onClick={handleSaveUPI}
+            onClick={handleSavePaymentSettings}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
           >
-            Save UPI Details
+            Save Payment Details
           </button>
         </div>
 
